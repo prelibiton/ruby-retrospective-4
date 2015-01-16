@@ -6,8 +6,9 @@ def get_element(first, second, index)
 end
 
 def series(name, index)
-  return get_element(1, 1, index) if name == 'fibonacci'
-  return get_element(2, 1, index) if name == 'lucas'
-
-  get_element(1, 1, index) + get_element(2, 1, index)
+  case name
+    when  'fibonacci' then get_element(1, 1, index)
+    when  'lucas'     then get_element(2, 1, index)
+    else get_element(1, 1, index) + get_element(2, 1, index)
+  end
 end
