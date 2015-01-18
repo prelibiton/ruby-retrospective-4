@@ -14,7 +14,7 @@ class NumberSet
   end
 
   def [](filter)
-    NumberSet.new(filter[@numbers_list])
+    NumberSet.new @numbers_list.select { |number| filter.call number }
   end
 
   def size
@@ -27,43 +27,47 @@ class NumberSet
 
 end
 
-class SignFilter
-
-  def initialize(sign)
-    @sign = sign
-  end
-
-  def [](array)
-    return array.find_all{ |v| v > 0 } if @sign == :positive
-    return array.find_all{ |v| v <= 0} if @sign == :non_positive
-    return array.find_all{ |v| v < 0} if @sign == :negative
-    array.find_all{ |v| v >= 0} if @sign == :non_negative
-  end
-
-end
-
-class TypeFilter
-
-  def initialize(type)
-    @type = type
-  end
-
-  def [](array)
-    return array.find_all{ |i| i.is_a? Integer } if @type == :integer
-    return array.find_all{ |i| i.is_a? Complex } if @type == :complex
-    array.find_all{ |i| i.is_a? Float or i.is_a? Rational } if @type == :real
-  end
-
-end
-
 class Filter
 
   def initialize (&block)
     @block = block
   end
 
-  def [](array)
-    array.find_all{ |e| @block.call(e) }
+  def &(other)
+    Filter.new { |x| @block.call x and other.call x }
+  end
+
+  def |(other)
+    Filter.new { |x| @block.call x or other.call x }
+  end
+
+  def call(p)
+    @block.call p
+  end
+
+end
+
+class SignFilter < Filter
+
+  def initialize(sign)
+    case sign
+      when :positive     then super() { |i| i > 0 }
+      when :negative     then super() { |i| i < 0 }
+      when :non_positive then super() { |i| i <= 0 }
+      when :non_negative then super() { |i| i >= 0 }
+    end
+  end
+
+end
+
+class TypeFilter < Filter
+
+  def initialize(type)
+    case type
+      when :integer then super() { |i| i.is_a? Integer}
+      when :real    then super() { |i| i.is_a? Float or i.is_a? Rational }
+      when :complex then super() { |i| i.is_a? Complex }
+    end
   end
 
 end
