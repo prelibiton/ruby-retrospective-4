@@ -84,7 +84,7 @@ module RBFS
   class File
     attr_accessor :data
 
-    def initialize(data=nil)
+    def initialize(data = nil)
       @data = data
     end
 
