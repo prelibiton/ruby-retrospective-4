@@ -5,20 +5,20 @@ class NumberSet
     @numbers_list = numbers_list
   end
 
-  def each
-    @numbers_list.each { |member| yield member }
+  def each(&block)
+    @numbers_list.each &block
   end
 
-  def << (number)
-    @numbers_list.push(number) unless @numbers_list.include?(number)
+  def <<(number)
+    @numbers_list << number unless @numbers_list.include? number
   end
 
   def [](filter)
-    new_list = NumberSet.new(filter[@numbers_list])
+    NumberSet.new(filter[@numbers_list])
   end
 
   def size
-    @numbers_list.length
+    @numbers_list.size
   end
 
   def empty?
