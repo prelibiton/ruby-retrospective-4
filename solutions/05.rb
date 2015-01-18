@@ -31,10 +31,60 @@ module RBFS
     end
   end
 
+  class File
+    attr_accessor :data
+
+    def initialize(data = nil)
+      @data = data
+    end
+
+    def data_type
+      case @data
+        when String   then :string
+        when Numeric  then :number
+        when Symbol   then :symbol
+        when NilClass then :nil
+        else :boolean
+      end
+    end
+
+    def data=(other)
+      @data = other
+      @data.to_s
+    end
+
+    def data
+      @data.to_s
+    end
+
+    def serialize
+      "#{data_type}:#{data}"
+    end
+
+    def self.parse(string_data)
+      splitted = string_data.split(":", 2)
+      File.new case splitted.first
+        when 'nil'     then
+        when 'string'  then splitted.last
+        when 'number'  then parse_number(splitted.last)
+        when 'symbol'  then splitted.last.to_sym
+        when 'boolean' then splitted.last == 'true'
+      end
+    end
+
+    def self.parse_number(data)
+      if data.include? '.'
+        data.to_f
+      else
+        data.to_i
+      end
+    end
+  end
+
   class Directory
     attr_reader :files, :directories
 
-    def initialize(files = {}, directories = {})
+    def initialize(files={}, directories={})
       @files       = files
       @directories = directories
     end
@@ -78,47 +128,6 @@ module RBFS
 
         "#{name}:#{serialized_entity.size}:#{serialized_entity}"
       end.join('')
-    end
-  end
-
-  class File
-    attr_accessor :data
-
-    def initialize(data=nil)
-      @data = data
-    end
-
-    def data_type
-      case @data
-        when String   then :string
-        when Numeric  then :number
-        when Symbol   then :symbol
-        when NilClass then :nil
-        else :boolean
-      end
-    end
-
-    def serialize
-      "#{data_type}:#{@data.to_s}"
-    end
-
-    def self.parse(string_data)
-      splitted = string_data.split(":", 2)
-      File.new case splitted.first
-        when 'nil'     then
-        when 'string'  then splitted.last
-        when 'number'  then parse_number(splitted.last)
-        when 'symbol'  then splitted.last.to_sym
-        when 'boolean' then splitted.last == 'true'
-      end
-    end
-
-    def self.parse_number(data)
-      if data.include? '.'
-        data.to_f
-      else
-        data.to_i
-      end
     end
   end
 end
