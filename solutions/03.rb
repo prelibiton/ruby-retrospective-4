@@ -1,28 +1,28 @@
 module RBFS
-
   class File
+    attr_accessor :data
 
-    def initialize(object = nil)
-      @object = object
+    def initialize(data = nil)
+      @data= data
     end
 
     def data_type
-      case @object
-        when String then :string
+      case @data
+        when String       then :string
         when Fixnum,Float then :number
-        when Symbol then :symbol
-        when NilClass then :nil
+        when Symbol       then :symbol
+        when NilClass     then :nil
         else :boolean
       end
     end
 
     def data= (other)
-      @object = other
-      @object.to_s
+      @data = other
+      @data.to_s
     end
 
     def data
-      @object.to_s
+      @data.to_s
     end
 
     def serialize
@@ -43,14 +43,14 @@ module RBFS
 
   end
 
-  class My_Hash
+  class MyHash
     def initialize
       @hash = Hash.new{ |hash, key| hash[key] = Hash.new }
     end
 
   end
 
-  class Directory < My_Hash
+  class Directory < MyHash
 
     def files
       @hash['file']
