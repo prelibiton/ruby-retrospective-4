@@ -3,7 +3,7 @@ module RBFS
     attr_accessor :data
 
     def initialize(data = nil)
-      @data= data
+      @data = data
     end
 
     def data_type
@@ -16,7 +16,7 @@ module RBFS
       end
     end
 
-    def data= (other)
+    def data=(other)
       @data = other
       @data.to_s
     end
@@ -30,15 +30,14 @@ module RBFS
     end
 
     def self.parse(string_data)
-      RBFS::File.new(
-        case string_data.split(":").first
-          when 'nil' then nil
-          when 'string' then string_data.split(":").drop(1).join(" ").to_s
-          when 'number' then eval(string_data.split(":").drop(1).join(" "))
-          when 'symbol' then string_data.split(":").drop(1).join(" ").to_sym
-          when string_data.split(":").drop(1).join(" ").to_s == 'true' then true
-          else false
-        end)
+      splitted = string_data.split(":",2)
+      File.new case splitted.first
+        when 'nil'     then
+        when 'string'  then splitted.last
+        when 'number'  then splitted.last.to_f
+        when 'symbol'  then splitted.last.to_sym
+        when 'boolean' then splitted.last == 'true'
+      end
     end
 
   end
@@ -105,3 +104,4 @@ module RBFS
 
 
 end
+
